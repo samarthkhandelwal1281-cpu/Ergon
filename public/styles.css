@@ -90,3 +90,19 @@ body{font-size:17px;line-height:1.55}
   .settings-row{align-items:flex-start;flex-direction:column;gap:12px}.help-layout{grid-template-columns:1fr;gap:18px}.help-questions summary{font-size:18px}.help-questions details p{font-size:13px}
 }
 
+
+/* Keep the motto and the active Paper/Night symbol together at the foot of the desktop rail. */
+.rail-bottom-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding:10px 0 12px;border-top:1px solid var(--hairline)}
+.rail-bottom-row .rail-note{flex:1;min-width:0;padding:0 4px;margin:0;gap:9px;font-size:13px;line-height:1.35}
+.rail-bottom-row .rail-mark{height:28px;flex:none}
+.topbar{justify-content:flex-start}
+@media(max-width:900px){
+  .rail-bottom-row{grid-area:theme;justify-self:end;align-self:center;width:max-content;margin:0;padding:0;border:0;gap:0}
+  .rail-bottom-row .rail-note{display:none}
+  .rail-bottom-row .theme-toggle{position:static;right:auto;bottom:auto;justify-self:end;width:36px;height:36px;padding:0;background:transparent;border:1px solid var(--hairline);border-radius:var(--r-sm)}
+}
+@media(max-width:640px){
+  .rail-bottom-row{grid-area:theme;justify-self:end;align-self:center;margin:0;padding:0;border:0}
+  .rail-bottom-row .rail-note{display:none}
+  .rail-bottom-row .theme-toggle{width:34px;height:34px}
+}

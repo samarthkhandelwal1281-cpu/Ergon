@@ -1,0 +1,17 @@
+{
+  "name": "ergon",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "node ./scripts/build.mjs",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "wrangler": "^4.97.0"
+  },
+  "dependencies": {
+    "motion": "12.23.24"
+  }
+}

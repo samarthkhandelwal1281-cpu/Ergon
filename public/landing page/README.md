@@ -1,6 +1,6 @@
 # Ergon landing page source
 
-This folder contains the standalone editorial landing page. The Worker serves public/landing page/index.html at / and keeps the existing frontend preview at /app. All Open Ergon actions and clickable feature frames open https://ergon-prbahn.camelai.app/.
+This folder contains the standalone editorial landing page. The Worker serves public/landing page/index.html at / and keeps the existing frontend preview at /app. All Open Ergon actions and clickable feature frames open https://ergon-prbahn.camelai.app/app.
 
 ## Motion
 The page reuses the repository's locally bundled Motion.dev helper at /motion-kit.js and its motion bundle at /vendor/motion.js. It uses the existing ergonMotion API for the wordmark draw, staggered entrance, in-view reveals, button hover/press, and slow background drift. Section links use a 400 ms Motion scroll, with the current section kept clear of the sticky header. Reduced-motion users get instant navigation, no drift, and visible content; drift pauses when the tab is hidden.

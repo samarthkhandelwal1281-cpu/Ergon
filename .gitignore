@@ -4,3 +4,4 @@ build/
 public/vendor/motion.js
 .env
 .env.*
+.dev.vars

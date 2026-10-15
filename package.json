@@ -1,17 +1,32 @@
 {
   "name": "ergon",
+  "version": "1.0.0",
   "private": true,
+  "description": "Ergon is a minimalist meeting-to-task frontend with transcript review, promise clarity scoring, an approval flow, a To Do / Doing / Done board, and a Meeting Debt dashboard.",
+  "homepage": "https://github.com/samarthkhandelwal1281-cpu/Ergon#readme",
+  "bugs": {
+    "url": "https://github.com/samarthkhandelwal1281-cpu/Ergon/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samarthkhandelwal1281-cpu/Ergon.git"
+  },
+  "license": "ISC",
+  "author": "samarth",
   "type": "module",
+  "main": "worker.js",
   "scripts": {
-    "dev": "wrangler dev",
+    "start": "node ./server.mjs",
+    "dev": "node ./server.mjs",
+    "dev:worker": "wrangler dev",
     "build": "node ./scripts/build.mjs",
     "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "motion": "12.23.24"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",
     "wrangler": "^4.97.0"
-  },
-  "dependencies": {
-    "motion": "12.23.24"
   }
 }

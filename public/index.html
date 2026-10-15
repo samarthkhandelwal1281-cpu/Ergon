@@ -1,208 +1,967 @@
 <!doctype html>
 <html lang="en" data-theme="paper">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#F3EFE6" />
-  <meta name="description" content="Ergon makes meeting commitments clear, owned, and trackable." />
-  <title>Ergon — make the work visible</title>
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/styles.css" />
-</head>
-<body>
-  <div class="wash wash-bronze" aria-hidden="true"></div><div class="wash wash-aegean" aria-hidden="true"></div>
-  <div class="app-shell">
-    <aside class="rail" aria-label="Main navigation">
-      <a class="wordmark" href="#profile" aria-label="Ergon home">
-        <span class="wordmark-name">ergon<span class="wordmark-sweep" aria-hidden="true"></span></span><span class="greek">ἔργον</span>
-      </a>
-      <button class="nav-link profile-nav is-active" type="button" data-view="profile" aria-current="page">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.8-3.5 3.4-5.5 7.5-5.5s6.7 2 7.5 5.5"/></svg><span>Profile</span>
-      </button>
-      <div class="rail-rule"></div>
-      <p class="rail-label">Workspace</p>
-      <nav class="nav-list" aria-label="Workspace">
-        <button class="nav-link" type="button" data-view="review">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16M4 12h10M4 18.5h7"/><path d="M17 15.5 20.5 19 17 22.5"/></svg><span>Review</span><span class="nav-count" id="review-count">—</span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#F3EFE6" />
+    <meta
+      name="description"
+      content="Ergon makes meeting commitments clear, owned, and trackable."
+    />
+    <title>Ergon — make the work visible</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="wash wash-bronze" aria-hidden="true"></div>
+    <div class="wash wash-aegean" aria-hidden="true"></div>
+    <div class="app-shell">
+      <aside class="rail" aria-label="Main navigation">
+        <a class="wordmark" href="#profile" aria-label="Ergon home">
+          <span class="wordmark-name"
+            >ergon<span class="wordmark-sweep" aria-hidden="true"></span></span
+          ><span class="greek">ἔργον</span>
+        </a>
+        <button
+          class="nav-link profile-nav is-active"
+          type="button"
+          data-view="profile"
+          aria-current="page"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="3.5" />
+            <path d="M4.5 20c.8-3.5 3.4-5.5 7.5-5.5s6.7 2 7.5 5.5" /></svg
+          ><span>Profile</span>
         </button>
-        <button class="nav-link" type="button" data-view="board">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="11" rx="1"/><rect x="16.5" y="4" width="4" height="7" rx="1"/></svg><span>Board</span><span class="nav-count" id="board-count">0</span>
-        </button>
-        <button class="nav-link" type="button" data-view="dashboard">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5V12M10 19.5V5M16 19.5v-9M22 19.5V8"/><path d="M2 20h20"/></svg><span>Dashboard</span>
-        </button>
-      </nav>
-      <div class="rail-spacer"></div>
-      <div class="rail-bottom-row">
-        <div class="rail-note"><span class="rail-mark" aria-hidden="true"></span><p>Promises, made<br />specific enough to keep.</p></div>
-        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to Night theme" title="Switch to Night theme">
-          <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
-          <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8 8.7 8.7 0 1 0 20.2 15.1Z"/><path d="M16 3v3m-1.5-1.5h3"/></svg>
-          <span class="sr-only" id="theme-toggle-label">Switch to Night theme</span>
-        </button>
-      </div>
-      <nav class="utility-list" aria-label="Support and settings">
-        <button class="nav-link" type="button" data-view="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 13.5 1.1.8-1.2 2.1-1.3-.5a7.8 7.8 0 0 1-1.4.8l-.2 1.4h-2.5l-.3-1.4a7.8 7.8 0 0 1-1.5-.1l-1 1-2-1.2.4-1.4a7.3 7.3 0 0 1-.8-1.4l-1.4-.2v-2.5l1.4-.3a7.3 7.3 0 0 1 .6-1.5l-.8-1.1 1.6-1.8 1.3.7a7.8 7.8 0 0 1 1.5-.4l.5-1.3h2.5l.2 1.4c.5.2 1 .4 1.4.8l1.3-.5 1.3 2.1-1 1.1c.1.5.2 1 .2 1.5Z"/></svg><span>Settings</span></button>
-        <button class="nav-link" type="button" data-view="help"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.7 9a2.4 2.4 0 1 1 4.4 1.3c-.9 1.1-2.1 1.3-2.1 3"/><path d="M12 17h.01"/></svg><span>Help center</span></button>
-      </nav>
-      <p class="rail-foot mono">LOCAL PREVIEW · 01</p>
-    </aside>
-
-    <div class="main-column">
-      <header class="topbar" data-enter>
-        <div class="crumb"><span class="mono">ERGON</span><span class="crumb-slash">/</span><span id="current-section">Profile</span></div>
-      </header>
-
-      <main class="workspace" id="workspace">
-        <section class="view is-current" id="profile" data-view-panel="profile" aria-labelledby="profile-title">
-          <div class="page-intro profile-intro" data-enter>
-            <p class="eyebrow">Your profile <span class="eyebrow-line"></span></p>
-            <h1 id="profile-title">Your work, in focus.<br /><em>Make space for the people behind it.</em></h1>
-            <div class="intro-bottom"><p>Set the context your team needs to work well together. Your details and team history stay in this browser preview.</p><p class="mono intro-note">PROFILE / YOURS TO DEFINE</p></div>
+        <div class="rail-rule"></div>
+        <p class="rail-label">Workspace</p>
+        <nav class="nav-list" aria-label="Workspace">
+          <button class="nav-link" type="button" data-view="review">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 5.5h16M4 12h10M4 18.5h7" />
+              <path d="M17 15.5 20.5 19 17 22.5" /></svg
+            ><span>Review</span
+            ><span class="nav-count" id="review-count"></span>
+          </button>
+          <button class="nav-link" type="button" data-view="board">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3.5" y="4" width="5" height="16" rx="1" />
+              <rect x="10" y="4" width="5" height="11" rx="1" />
+              <rect x="16.5" y="4" width="4" height="7" rx="1" /></svg
+            ><span>Board</span><span class="nav-count" id="board-count">0</span>
+          </button>
+          <button class="nav-link" type="button" data-view="dashboard">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 19.5V12M10 19.5V5M16 19.5v-9M22 19.5V8" />
+              <path d="M2 20h20" /></svg
+            ><span>Dashboard</span>
+          </button>
+        </nav>
+        <div class="rail-spacer"></div>
+        <div class="rail-bottom-row">
+          <div class="rail-note">
+            <span class="rail-mark" aria-hidden="true"></span>
+            <p>Promises, made<br />specific enough to keep.</p>
           </div>
-          <div class="profile-layout">
-            <section class="profile-details-panel" aria-labelledby="profile-details-title" data-enter>
-              <div class="profile-identity"><div class="profile-avatar" id="profile-avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.8-3.5 3.4-5.5 7.5-5.5s6.7 2 7.5 5.5"/></svg></div><div><p class="section-kicker mono">YOUR DETAILS</p><h2 id="profile-display-name">Your profile</h2><p class="profile-role-summary" id="profile-role-summary">Role not set</p></div></div>
-              <form class="profile-form" id="profile-form">
-                <label class="field"><span class="field-label mono">DISPLAY NAME</span><input id="profile-name" type="text" autocomplete="name" placeholder="Add your name" /></label>
-                <label class="field"><span class="field-label mono">ROLE OR FOCUS</span><input id="profile-role" type="text" placeholder="e.g. Product designer" /></label>
-                <label class="field profile-about-field"><span class="field-label mono">ABOUT</span><textarea id="profile-about" rows="3" placeholder="What do you work on? What helps you collaborate well?"></textarea></label>
-                <p class="profile-local-note"><span class="notice-mark" aria-hidden="true"></span>These details are session-only in this frontend preview; no account or shared profile is connected.</p>
-              </form>
-            </section>
-            <aside class="profile-activity-panel" aria-labelledby="profile-activity-title" data-enter>
-              <div class="panel-head"><div><p class="section-kicker mono">YOUR ACTIVITY</p><h3 id="profile-activity-title">A current-session snapshot</h3></div><span class="mono panel-meta">NO HISTORY SYNC</span></div>
-              <div class="profile-stat-list">
-                <div class="profile-stat"><div><span>Meetings attended</span><small>Self-reported</small></div><label class="sr-only" for="profile-meetings-attended">Meetings attended, self-reported</label><input id="profile-meetings-attended" type="number" min="0" step="1" placeholder="—" inputmode="numeric" /></div>
-                <div class="profile-stat"><div><span>Overall vague score</span><small>Current review-session average</small></div><strong id="profile-vague-score">—</strong></div>
-                <div class="profile-stat"><div><span>Promises clarified</span><small>Approved to your local task board</small></div><strong id="profile-clarified-count">0</strong></div>
-                <div class="profile-stat"><div><span>Teams joined</span><small>Names you added in this session</small></div><strong id="profile-team-count">0</strong></div>
+          <button
+            class="theme-toggle"
+            id="theme-toggle"
+            type="button"
+            aria-pressed="false"
+            aria-label="Switch to Night theme"
+            title="Switch to Night theme"
+          >
+            <svg
+              class="theme-icon theme-icon-sun"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"
+              />
+            </svg>
+            <svg
+              class="theme-icon theme-icon-moon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8 8.7 8.7 0 1 0 20.2 15.1Z"
+              />
+              <path d="M16 3v3m-1.5-1.5h3" />
+            </svg>
+            <span class="sr-only" id="theme-toggle-label"
+              >Switch to Night theme</span
+            >
+          </button>
+        </div>
+        <nav class="utility-list" aria-label="Support and settings">
+          <button class="nav-link" type="button" data-view="settings">
+            <svg
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.48-.48-.48h-3.84c-.24 0-.43.21-.47.48l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.19.15-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.48.48.48h3.84c.24 0 .44-.24.47-.48l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
+              /></svg
+            ><span>Settings</span>
+          </button>
+          <button class="nav-link" type="button" data-view="help">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M9.7 9a2.4 2.4 0 1 1 4.4 1.3c-.9 1.1-2.1 1.3-2.1 3" />
+              <path d="M12 17h.01" /></svg
+            ><span>Help center</span>
+          </button>
+        </nav>
+      </aside>
+
+      <div class="main-column">
+        <header class="topbar" data-enter>
+          <div class="crumb">
+            <span class="mono">ERGON</span><span class="crumb-slash">/</span
+            ><span id="current-section">Profile</span>
+          </div>
+        </header>
+
+        <main class="workspace" id="workspace">
+          <section
+            class="view is-current"
+            id="profile"
+            data-view-panel="profile"
+            aria-labelledby="profile-title"
+          >
+            <div class="page-intro profile-intro" data-enter>
+              <p class="eyebrow">
+                Your profile <span class="eyebrow-line"></span>
+              </p>
+              <h1 id="profile-title">
+                Your work, in focus.<br /><em
+                  >Make space for the people behind it.</em
+                >
+              </h1>
+              <div class="intro-bottom">
+                <p>
+                  Set the context your team needs to work well together. Your
+                  details and team history stay in this browser preview.
+                </p>
+                <p class="mono intro-note">PROFILE / YOURS TO DEFINE</p>
               </div>
-              <p class="profile-score-note">The score is a transparent SMART-gap heuristic, not a performance rating.</p>
-            </aside>
-          </div>
-          <div class="profile-teams-layout">
-            <section class="team-history-panel" aria-labelledby="team-history-title" data-enter>
-              <div class="panel-head"><div><p class="section-kicker mono">YOUR COLLABORATION HISTORY</p><h3 id="team-history-title">Teams</h3></div><span class="mono panel-meta">LOCAL SESSION</span></div>
-              <div id="team-history" class="team-history"><p class="team-empty">No team history yet. Add a team you belong to, or use Join team to record one here.</p></div>
-            </section>
-            <section class="join-team-panel" aria-labelledby="join-team-title" data-enter>
-              <p class="section-kicker mono">GROW TOGETHER</p><h3 id="join-team-title">Join a team</h3><p>Record a team name or invite code to keep your profile context together.</p>
-              <button class="button-primary" id="open-team-form" type="button"><span>Join a team</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-7-7h14"/></svg></button>
-              <form id="join-team-form" class="join-team-form" hidden><label class="field"><span class="field-label mono">TEAM NAME OR INVITE LABEL</span><input id="team-name-input" type="text" required maxlength="60" placeholder="Enter the team name" /></label><button class="button-primary" type="submit"><span>Confirm join</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 9.5 17 19 7.5"/></svg></button></form>
-              <p class="team-local-note">Membership is recorded only in this browser preview; it does not contact or invite a real team.</p>
-            </section>
-          </div>
-        </section>
+            </div>
+            <div class="profile-layout">
+              <section
+                class="profile-details-panel"
+                aria-labelledby="profile-details-title"
+                data-enter
+              >
+                <div class="profile-identity">
+                  <div
+                    class="profile-avatar"
+                    id="profile-avatar"
+                    aria-hidden="true"
+                  >
+                    <svg viewBox="0 0 24 24">
+                      <circle cx="12" cy="8" r="3.5" />
+                      <path d="M4.5 20c.8-3.5 3.4-5.5 7.5-5.5s6.7 2 7.5 5.5" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="section-kicker mono">YOUR DETAILS</p>
+                    <h2 id="profile-display-name">Your profile</h2>
+                    <p class="profile-role-summary" id="profile-role-summary">
+                      Role not set
+                    </p>
+                  </div>
+                </div>
+                <form class="profile-form" id="profile-form">
+                  <label class="field"
+                    ><span class="field-label mono">NAME</span
+                    ><input
+                      id="profile-name"
+                      type="text"
+                      autocomplete="name"
+                      placeholder="Add your name"
+                  /></label>
+                  <label class="field"
+                    ><span class="field-label mono">ROLE OR FOCUS</span
+                    ><input
+                      id="profile-role"
+                      type="text"
+                      placeholder="e.g. Product designer"
+                  /></label>
+                  <label class="field profile-about-field"
+                    ><span class="field-label mono">ABOUT</span
+                    ><textarea
+                      id="profile-about"
+                      rows="3"
+                      placeholder="What do you work on? What helps you collaborate well?"
+                    ></textarea>
+                  </label>
+                  <p class="profile-local-note">
+                    <span class="notice-mark" aria-hidden="true"></span>These
+                    details are session-only in this frontend preview; no
+                    account or shared profile is connected.
+                  </p>
+                </form>
+              </section>
+              <aside
+                class="profile-activity-panel"
+                aria-labelledby="profile-activity-title"
+                data-enter
+              >
+                <div class="panel-head">
+                  <div>
+                    <p class="section-kicker mono">YOUR ACTIVITY</p>
+                    <h3 id="profile-activity-title">
+                      A current-session snapshot
+                    </h3>
+                  </div>
+                  <span class="mono panel-meta">NO HISTORY SYNC</span>
+                </div>
+                <div class="profile-stat-list">
+                  <div class="profile-stat">
+                    <div>
+                      <span>Meetings attended</span><small>Self-reported</small>
+                    </div>
+                    <label class="sr-only" for="profile-meetings-attended"
+                      >Meetings attended, self-reported</label
+                    ><input
+                      id="profile-meetings-attended"
+                      type="number"
+                      min="0"
+                      step="1"
+                      placeholder="—"
+                      inputmode="numeric"
+                    />
+                  </div>
+                  <div class="profile-stat">
+                    <div>
+                      <span>Overall vague score</span
+                      ><small>Current review-session average</small>
+                    </div>
+                    <strong id="profile-vague-score">—</strong>
+                  </div>
+                  <div class="profile-stat">
+                    <div>
+                      <span>Promises clarified</span
+                      ><small>Approved to your local task board</small>
+                    </div>
+                    <strong id="profile-clarified-count">0</strong>
+                  </div>
+                  <div class="profile-stat">
+                    <div>
+                      <span>Teams joined</span
+                      ><small>Names you added in this session</small>
+                    </div>
+                    <strong id="profile-team-count">0</strong>
+                  </div>
+                </div>
+                <p class="profile-score-note">
+                  The score is a transparent SMART-gap heuristic, not a
+                  performance rating.
+                </p>
+              </aside>
+            </div>
+            <div class="profile-teams-layout">
+              <section
+                class="team-history-panel"
+                aria-labelledby="team-history-title"
+                data-enter
+              >
+                <div class="panel-head">
+                  <div>
+                    <p class="section-kicker mono">
+                      YOUR COLLABORATION HISTORY
+                    </p>
+                    <h3 id="team-history-title">Teams</h3>
+                  </div>
+                  <span class="mono panel-meta">LOCAL SESSION</span>
+                </div>
+                <div id="team-history" class="team-history">
+                  <p class="team-empty">
+                    No team history yet. Add a team you belong to, or use Join
+                    team to record one here.
+                  </p>
+                </div>
+              </section>
+              <section
+                class="join-team-panel"
+                aria-labelledby="join-team-title"
+                data-enter
+              >
+                <p class="section-kicker mono">GROW TOGETHER</p>
+                <h3 id="join-team-title">Join a team</h3>
+                <p>
+                  Record a team name or invite code to keep your profile context
+                  together.
+                </p>
+                <button
+                  class="button-primary"
+                  id="open-team-form"
+                  type="button"
+                >
+                  <span>Join a team</span
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5v14m-7-7h14" />
+                  </svg>
+                </button>
+                <form id="join-team-form" class="join-team-form" hidden>
+                  <label class="field"
+                    ><span class="field-label mono"
+                      >TEAM NAME OR INVITE LABEL</span
+                    ><input
+                      id="team-name-input"
+                      type="text"
+                      required
+                      maxlength="60"
+                      placeholder="Enter the team name" /></label
+                  ><button class="button-primary" type="submit">
+                    <span>Confirm join</span
+                    ><svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M5 12.5 9.5 17 19 7.5" />
+                    </svg>
+                  </button>
+                </form>
+                <p class="team-local-note">
+                  Membership is recorded only in this browser preview; it does
+                  not contact or invite a real team.
+                </p>
+              </section>
+            </div>
+          </section>
 
-        <section class="view" data-view-panel="review" aria-labelledby="review-title" hidden>
-          <div class="page-intro" data-enter>
-            <p class="eyebrow">Meeting-to-task workspace <span class="eyebrow-line"></span></p>
-            <h1 id="review-title">Meetings don't fail on decisions.<br /><em>They fail on vague promises.</em></h1>
-            <div class="intro-bottom"><p>Bring the conversation into focus. Confirm who owns the work, what “done” means, and when it is due.</p><p class="mono intro-note">REVIEW → CONFIRM → FOLLOW THROUGH</p></div>
-          </div>
-
-          <div class="preview-notice" role="note" data-enter><span class="notice-mark" aria-hidden="true"></span><p><strong>Frontend preview.</strong> Transcript files stay in this browser; AI analysis and shared storage are not connected here.</p></div>
-
-          <div class="review-heading" data-enter>
-            <div><p class="section-kicker mono">01 / TRANSCRIPT REVIEW</p><h2>Start with the record.</h2></div>
-            <p class="review-subtitle">Paste meeting notes or add a transcript file.<br />Each promise should be easy to verify.</p>
-          </div>
-
-          <div class="meeting-fields" data-enter>
-            <label class="field"><span class="field-label mono">MEETING TITLE</span><input id="meeting-title" type="text" placeholder="e.g. Product sync — 14 October" autocomplete="off" /></label>
-            <label class="field field-date"><span class="field-label mono">MEETING DATE</span><input id="meeting-date" type="date" /></label>
-          </div>
-
-          <div class="review-grid">
-            <section class="panel transcript-panel" aria-labelledby="transcript-heading" data-enter>
-              <div class="panel-head">
-                <div><p class="section-kicker mono">SOURCE</p><h3 id="transcript-heading">Transcript</h3></div>
-                <span class="quiet-chip" id="source-state">Awaiting transcript</span>
+          <section
+            class="view"
+            data-view-panel="review"
+            aria-labelledby="review-title"
+            hidden
+          >
+            <div class="page-intro" data-enter>
+              <p class="eyebrow">
+                Meeting-to-task workspace <span class="eyebrow-line"></span>
+              </p>
+              <h1 id="review-title">
+                Meetings don't fail on decisions.<br /><em
+                  >They fail on vague promises.</em
+                >
+              </h1>
+              <div class="intro-bottom">
+                <p>
+                  Bring the conversation into focus. Confirm who owns the work,
+                  what “done” means, and when it is due.
+                </p>
+                <p class="mono intro-note">REVIEW → CONFIRM → FOLLOW THROUGH</p>
               </div>
-              <div class="upload-controls">
-                <label for="transcript-file" class="text-button upload-button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5"/><path d="M5 13.5v5A2.5 2.5 0 0 0 7.5 21h9a2.5 2.5 0 0 0 2.5-2.5v-5"/></svg>Choose .txt / .vtt / .srt<input id="transcript-file" type="file" accept=".txt,.vtt,.srt,text/plain" /></label>
-                <button class="text-button" type="button" id="load-example">Load example transcript</button>
+            </div>
+
+            <div class="preview-notice" role="note" data-enter>
+              <span class="notice-mark" aria-hidden="true"></span>
+              <p>
+                <strong>Frontend preview.</strong> Transcript files stay in this
+                browser; AI analysis and shared storage are not connected here.
+              </p>
+            </div>
+
+            <div class="review-heading" data-enter>
+              <div>
+                <p class="section-kicker mono">01 / TRANSCRIPT REVIEW</p>
+                <h2>Start with the record.</h2>
               </div>
-              <div class="input-wrap" id="input-wrap"><textarea id="transcript-input" rows="10" spellcheck="false" aria-label="Meeting transcript" placeholder="Paste a transcript with speaker names, one turn per line…
+              <p class="review-subtitle">
+                Paste meeting notes or add a transcript file.<br />Each promise
+                should be easy to verify.
+              </p>
+            </div>
+
+            <div class="meeting-fields" data-enter>
+              <label class="field"
+                ><span class="field-label mono">MEETING TITLE</span
+                ><input
+                  id="meeting-title"
+                  type="text"
+                  placeholder="e.g. Product sync — 14 October"
+                  autocomplete="off"
+              /></label>
+              <label class="field field-date"
+                ><span class="field-label mono">MEETING DATE</span
+                ><input id="meeting-date" type="date"
+              /></label>
+            </div>
+
+            <div class="review-grid">
+              <section
+                class="panel transcript-panel"
+                aria-labelledby="transcript-heading"
+                data-enter
+              >
+                <div class="panel-head">
+                  <div>
+                    <p class="section-kicker mono">SOURCE</p>
+                    <h3 id="transcript-heading">Transcript</h3>
+                  </div>
+                  <span class="quiet-chip" id="source-state"
+                    >Awaiting transcript</span
+                  >
+                </div>
+                <div class="upload-controls">
+                  <label for="transcript-file" class="text-button upload-button"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5" />
+                      <path
+                        d="M5 13.5v5A2.5 2.5 0 0 0 7.5 21h9a2.5 2.5 0 0 0 2.5-2.5v-5"
+                      /></svg
+                    >Choose .txt / .vtt / .srt<input
+                      id="transcript-file"
+                      type="file"
+                      accept=".txt,.vtt,.srt,text/plain"
+                  /></label>
+                  <button class="text-button" type="button" id="load-example">
+                    Load example transcript
+                  </button>
+                </div>
+                <div class="input-wrap" id="input-wrap">
+                  <textarea
+                    id="transcript-input"
+                    rows="10"
+                    spellcheck="false"
+                    aria-label="Meeting transcript"
+                    placeholder="Paste a transcript with speaker names, one turn per line…
 
 Mina: I can send the revised brief by Thursday.
-Jon: Great — please include the launch checklist."></textarea><span class="input-corner mono">PASTE OR TYPE</span></div>
-              <div class="source-footer"><span class="privacy-note"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="1.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Local only · nothing is uploaded</span><span class="mono char-count" id="char-count">0 characters</span></div>
-              <div class="analysis-actions"><p id="analysis-message" class="analysis-message" role="status" aria-live="polite">Add a transcript to begin. Speaker names help anchor each promise.</p><button class="button-primary" id="analyze-button" type="button"><span>Review commitments</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></button></div>
-              <div class="progress-wrap" id="progress-wrap" hidden aria-label="Analysis progress"><div class="progress-track"><span id="progress-fill"></span></div><span class="mono" id="progress-label">Preparing review</span></div>
-              <div class="transcript-results" id="transcript-results" hidden>
-                <div class="results-bar"><div><p class="section-kicker mono">EVIDENCE VIEW</p><p class="results-title" id="results-title">Highlighted commitments</p></div><span class="mono" id="analysis-mode"></span></div>
-                <div class="transcript-scroll-layout">
-                  <div class="transcript-scroll" id="transcript-scroll" tabindex="0" aria-label="Transcript with commitment highlights"></div>
-                  <aside class="minimap" aria-label="Transcript promise minimap"><div class="minimap-track" id="minimap-track"></div><span class="minimap-viewport" id="minimap-viewport"></span></aside>
+Jon: Great — please include the launch checklist."
+                  ></textarea
+                  ><span class="input-corner mono">PASTE OR TYPE</span>
                 </div>
-                <p class="transcript-footnote"><span class="status-key clear-key">Clear</span><span class="status-key fuzzy-key">Fuzzy</span><span class="status-key vague-key">Vague</span><span class="footnote-copy">Scores are a transparent SMART-criteria heuristic, not a prediction.</span></p>
-              </div>
-              <div class="empty-results" id="empty-results" hidden><p class="empty-title">No promises found.</p><p>Check that the transcript has speaker names and explicit commitments, then try again.</p></div>
-            </section>
+                <div class="source-footer">
+                  <span class="privacy-note"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="5" y="10" width="14" height="11" rx="1.5" />
+                      <path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg
+                    >Local only · nothing is uploaded</span
+                  ><span class="mono char-count" id="char-count"
+                    >0 characters</span
+                  >
+                </div>
+                <div class="analysis-actions">
+                  <p
+                    id="analysis-message"
+                    class="analysis-message"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    Add a transcript to begin. Speaker names help anchor each
+                    promise.
+                  </p>
+                  <button
+                    class="button-primary"
+                    id="analyze-button"
+                    type="button"
+                  >
+                    <span>Review commitments</span
+                    ><svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 12h15M13 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="progress-wrap"
+                  id="progress-wrap"
+                  hidden
+                  aria-label="Analysis progress"
+                >
+                  <div class="progress-track">
+                    <span id="progress-fill"></span>
+                  </div>
+                  <span class="mono" id="progress-label">Preparing review</span>
+                </div>
+                <div class="transcript-results" id="transcript-results" hidden>
+                  <div class="results-bar">
+                    <div>
+                      <p class="section-kicker mono">EVIDENCE VIEW</p>
+                      <p class="results-title" id="results-title">
+                        Highlighted commitments
+                      </p>
+                    </div>
+                    <span class="mono" id="analysis-mode"></span>
+                  </div>
+                  <div class="transcript-scroll-layout">
+                    <div
+                      class="transcript-scroll"
+                      id="transcript-scroll"
+                      tabindex="0"
+                      aria-label="Transcript with commitment highlights"
+                    ></div>
+                    <aside
+                      class="minimap"
+                      aria-label="Transcript promise minimap"
+                    >
+                      <div class="minimap-track" id="minimap-track"></div>
+                      <span
+                        class="minimap-viewport"
+                        id="minimap-viewport"
+                      ></span>
+                    </aside>
+                  </div>
+                  <p class="transcript-footnote">
+                    <span class="status-key clear-key">Clear</span
+                    ><span class="status-key fuzzy-key">Fuzzy</span
+                    ><span class="status-key vague-key">Vague</span
+                    ><span class="footnote-copy"
+                      >Scores are a transparent SMART-criteria heuristic, not a
+                      prediction.</span
+                    >
+                  </p>
+                </div>
+                <div class="empty-results" id="empty-results" hidden>
+                  <p class="empty-title">No promises found.</p>
+                  <p>
+                    Check that the transcript has speaker names and explicit
+                    commitments, then try again.
+                  </p>
+                </div>
+              </section>
 
-            <aside class="panel inspector-panel" aria-labelledby="inspector-heading" data-enter>
-              <div class="panel-head inspector-head"><div><p class="section-kicker mono">REVIEW & RESOLVE</p><h3 id="inspector-heading">Promise inspector</h3></div><span class="inspector-total mono" id="inspector-total">00</span></div>
-              <p class="inspector-intro">Review the evidence, fill the gaps, and approve only what is clear.</p>
-              <div id="inspector-list" class="inspector-list"><div class="inspector-empty"><span class="empty-rule"></span><p>Your promises will appear here after review.</p><span class="mono">OWNER · DEADLINE · DELIVERABLE</span></div></div>
-            </aside>
-          </div>
-          <div class="review-bottomline"><span class="mono">ERGON / PROMISE CLARITY</span><span>Every highlight links back to its exact line.</span></div>
-        </section>
-
-        <section class="view" data-view-panel="board" aria-labelledby="board-title" hidden>
-          <div class="page-intro compact-intro" data-enter><p class="eyebrow">02 / FOLLOW THROUGH <span class="eyebrow-line"></span></p><h1 id="board-title">A promise becomes work<br /><em>when someone owns it.</em></h1><div class="intro-bottom"><p>Approved commitments move here. Keep the next step visible without adding another layer of process.</p><p class="mono intro-note">TO DO → DOING → DONE</p></div></div>
-          <div class="board-toolbar"><div><p class="section-kicker mono">TASK BOARD</p><p class="board-caption" id="board-caption">No approved tasks yet. Confirm a promise in Review to add it here.</p></div><button class="text-button" type="button" id="board-export">Export task CSV <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 16v4h14v-4"/></svg></button></div>
-          <div class="board-grid" id="board-grid">
-            <section class="board-column" data-status="todo"><header><span class="column-dot todo-dot"></span><h2>To Do</h2><span class="column-count mono" data-column-count="todo">0</span></header><div class="task-list" data-task-list="todo"><p class="column-empty">Nothing queued.</p></div></section>
-            <section class="board-column" data-status="doing"><header><span class="column-dot doing-dot"></span><h2>Doing</h2><span class="column-count mono" data-column-count="doing">0</span></header><div class="task-list" data-task-list="doing"><p class="column-empty">Nothing in progress.</p></div></section>
-            <section class="board-column" data-status="done"><header><span class="column-dot done-dot"></span><h2>Done</h2><span class="column-count mono" data-column-count="done">0</span></header><div class="task-list" data-task-list="done"><p class="column-empty">Nothing completed yet.</p></div></section>
-          </div>
-          <div class="board-footer"><span class="mono">MOVE BUTTONS KEEP EVERY CHANGE EXPLICIT</span><span>Task updates stay in this browser preview.</span></div>
-        </section>
-
-        <section class="view" data-view-panel="dashboard" aria-labelledby="dashboard-title" hidden>
-          <div class="page-intro compact-intro" data-enter><p class="eyebrow">03 / MEETING HEALTH <span class="eyebrow-line"></span></p><h1 id="dashboard-title">Clarity is a team habit.<br /><em>Measure the open loops.</em></h1><div class="intro-bottom"><p>Meeting Debt is the average clarity score across unresolved promises. Lower is clearer; it is a heuristic, not a forecast.</p><p class="mono intro-note">LIVE FROM THIS REVIEW SESSION</p></div></div>
-          <div class="dashboard-grid">
-            <section class="debt-panel" aria-labelledby="debt-heading" data-enter>
-              <div class="debt-copy"><p class="section-kicker mono">MEETING DEBT / CURRENT SESSION</p><h2 id="debt-heading">Unresolved promise<br />clarity score</h2><p class="debt-explainer">Average SMART-gap score for promises not rejected. Confirming owner, deadline, and deliverable can reduce the score.</p><div class="debt-legend"><span><i class="legend-dot vague-dot"></i>Vague 46–100</span><span><i class="legend-dot fuzzy-dot"></i>Fuzzy 16–45</span><span><i class="legend-dot clear-dot"></i>Clear 0–15</span></div></div>
-              <div class="debt-number-wrap"><p class="mono debt-label">BEFORE <span id="debt-before">—</span></p><p class="debt-number" id="debt-now">—</p><p class="mono debt-current-label">MEETING DEBT NOW</p><div class="debt-bar" aria-hidden="true"><span id="debt-bar-fill"></span></div><p class="mono debt-change" id="debt-change">No reviewed promises yet</p></div>
-            </section>
-            <section class="metric-panel chart-panel" data-enter><div class="panel-head"><div><p class="section-kicker mono">CURRENT MIX</p><h3>Promise clarity</h3></div><span class="mono panel-meta" id="promise-total">0 PROMISES</span></div><div class="mix-content" id="mix-content"><div class="mix-empty">Your clarity mix appears after transcript review.</div></div><p class="chart-caption">Pie segments show the share of clear, fuzzy, and vague promises.</p></section>
-            <section class="metric-panel chart-panel" data-enter><div class="panel-head"><div><p class="section-kicker mono">SCORE DISTRIBUTION</p><h3>Promises by clarity</h3></div><span class="mono panel-meta">COUNT</span></div><div class="score-bar-chart" id="score-bar-chart"><p class="mix-empty">The bar chart appears after transcript review.</p></div><p class="chart-caption">Each bar is a promise count; labels remain visible without color.</p></section>
-            <section class="metric-panel load-panel" data-enter><div class="panel-head"><div><p class="section-kicker mono">OWNERSHIP</p><h3>Task load by owner</h3></div><span class="mono panel-meta">APPROVED TASKS</span></div><div class="load-content" id="load-content"><div class="mix-empty">Owner workload is empty until tasks are approved.</div></div><p class="chart-caption">Bars scale to the largest approved task count.</p></section>
-            <section class="orphan-panel" data-enter><div><p class="section-kicker mono">FOLLOW-UP NEEDED</p><h3>Promises without an owner</h3><p id="orphan-copy">No transcript has been reviewed in this session.</p></div><button class="text-button" type="button" data-go-view="review">Review promises <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></button></section>
-            <section class="reminder-panel" data-enter><div class="panel-head"><div><p class="section-kicker mono">NEXT STEP</p><h3>Useful reminders</h3></div><span class="mono panel-meta">NO AUTO-SEND</span></div><div id="reminder-list" class="reminder-list"><p class="reminder-empty">Approve a task with a due date to create a calendar reminder link.</p></div></section>
-          </div>
-          <div class="dashboard-footer"><span class="mono">HEURISTIC, NOT A PREDICTOR</span><button class="text-button" type="button" id="dashboard-export">Download approved tasks CSV <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 16v4h14v-4"/></svg></button></div>
-        </section>
-        <section class="view" data-view-panel="settings" aria-labelledby="settings-title" hidden>
-          <div class="page-intro compact-intro" data-enter><p class="eyebrow">WORKSPACE / PREFERENCES <span class="eyebrow-line"></span></p><h1 id="settings-title">A quieter workspace.<br /><em>Settings that stay clear.</em></h1><div class="intro-bottom"><p>Adjust the look and reset this browser preview without changing a connected account or service.</p><p class="mono intro-note">LOCAL PREFERENCES</p></div></div>
-          <div class="settings-list">
-            <section class="settings-row" data-enter><div><p class="section-kicker mono">APPEARANCE</p><h2>Theme</h2><p>Switch between Paper and Night using the sun/moon control.</p></div><button class="text-button" id="settings-theme-toggle" type="button">Switch theme <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></button></section>
-            <section class="settings-row" data-enter><div><p class="section-kicker mono">PRIVACY</p><h2>Transcript handling</h2><p>Files are read in this browser. This preview has no AI endpoint, server-side transcript storage, or team sync.</p></div><span class="settings-status">LOCAL ONLY</span></section>
-            <section class="settings-row" data-enter><div><p class="section-kicker mono">SESSION DATA</p><h2>Reset the current session</h2><p>Clears the transcript review and approved tasks currently held in memory.</p></div><button class="text-button danger-link" id="reset-session" type="button">Clear session data</button></section>
-          </div>
-        </section>
-        <section class="view" data-view-panel="help" aria-labelledby="help-title" hidden>
-          <div class="page-intro compact-intro" data-enter><p class="eyebrow">SUPPORT / ERGON GUIDE <span class="eyebrow-line"></span></p><h1 id="help-title">Help for the next<br /><em>clear commitment.</em></h1><div class="intro-bottom"><p>Short answers for the transcript review, promise score, board, and local-preview limits.</p><p class="mono intro-note">HELP CENTER</p></div></div>
-          <div class="help-layout">
-            <div class="help-questions" data-enter>
-              <details open><summary>How do I start a review?</summary><p>Open Review, paste meeting text with speaker names or choose a .txt, .vtt, or .srt file, then select Review commitments. The file is read locally in this browser.</p></details>
-              <details><summary>What does the vague score mean?</summary><p>It is a transparent SMART-gap heuristic. It adds points when owner, deadline, or deliverable is missing or when hedge language appears. It is not a prediction of performance.</p></details>
-              <details><summary>Does this version use AI or sync teams?</summary><p>No. This frontend preview uses a small local rules preview and the provided example. It does not call an AI service, store shared records, or connect team memberships.</p></details>
-              <details><summary>How do reminders work?</summary><p>Approve a task and enter a full YYYY-MM-DD deadline to get a Google Calendar draft link. Reminder text can also be copied; nothing is sent automatically.</p></details>
-              <details><summary>Where can I view tasks?</summary><p>Approved promises appear on the Board. Use the move buttons to update To Do, Doing, and Done. The Dashboard summarizes the current browser session.</p></details>
+              <aside
+                class="panel inspector-panel"
+                aria-labelledby="inspector-heading"
+                data-enter
+              >
+                <div class="panel-head inspector-head">
+                  <div>
+                    <p class="section-kicker mono">REVIEW & RESOLVE</p>
+                    <h3 id="inspector-heading">Promise inspector</h3>
+                  </div>
+                  <span class="inspector-total mono" id="inspector-total"
+                    >00</span
+                  >
+                </div>
+                <p class="inspector-intro">
+                  Review the evidence, fill the gaps, and approve only what is
+                  clear.
+                </p>
+                <div id="inspector-list" class="inspector-list">
+                  <div class="inspector-empty">
+                    <span class="empty-rule"></span>
+                    <p>Your promises will appear here after review.</p>
+                    <span class="mono">OWNER · DEADLINE · DELIVERABLE</span>
+                  </div>
+                </div>
+              </aside>
             </div>
-            <aside class="help-aside" data-enter><p class="section-kicker mono">NEED A NEXT STEP?</p><h2>Continue your work</h2><button class="text-button" type="button" data-go-view="review">Open transcript review <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></button><button class="text-button" type="button" data-go-view="board">Open task board <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></button></aside>
-          </div>
-        </section>
-      </main>
-      <footer class="app-footer"><span class="mono">ERGON · ἔργον</span><span>Specific promises make better work.</span><span class="mono">PAPER / 01</span></footer>
+            <div class="review-bottomline">
+              <span class="mono">ERGON / PROMISE CLARITY</span
+              ><span>Every highlight links back to its exact line.</span>
+            </div>
+          </section>
+
+          <section
+            class="view"
+            data-view-panel="board"
+            aria-labelledby="board-title"
+            hidden
+          >
+            <div class="page-intro compact-intro" data-enter>
+              <p class="eyebrow">
+                02 / FOLLOW THROUGH <span class="eyebrow-line"></span>
+              </p>
+              <h1 id="board-title">
+                A promise becomes work<br /><em>when someone owns it.</em>
+              </h1>
+              <div class="intro-bottom">
+                <p>
+                  Approved commitments move here. Keep the next step visible
+                  without adding another layer of process.
+                </p>
+                <p class="mono intro-note">TO DO → DOING → DONE</p>
+              </div>
+            </div>
+            <div class="board-toolbar">
+              <div>
+                <p class="section-kicker mono">TASK BOARD</p>
+                <p class="board-caption" id="board-caption">
+                  No approved tasks yet. Confirm a promise in Review to add it
+                  here.
+                </p>
+              </div>
+              <button class="text-button" type="button" id="board-export">
+                Export task CSV
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3v12m0 0 4-4m-4 4-4-4" />
+                  <path d="M5 16v4h14v-4" />
+                </svg>
+              </button>
+            </div>
+            <div class="board-grid" id="board-grid">
+              <section class="board-column" data-status="todo">
+                <header>
+                  <span class="column-dot todo-dot"></span>
+                  <h2>To Do</h2>
+                  <span class="column-count mono" data-column-count="todo"
+                    >0</span
+                  >
+                </header>
+                <div class="task-list" data-task-list="todo">
+                  <p class="column-empty">Nothing queued.</p>
+                </div>
+              </section>
+              <section class="board-column" data-status="doing">
+                <header>
+                  <span class="column-dot doing-dot"></span>
+                  <h2>Doing</h2>
+                  <span class="column-count mono" data-column-count="doing"
+                    >0</span
+                  >
+                </header>
+                <div class="task-list" data-task-list="doing">
+                  <p class="column-empty">Nothing in progress.</p>
+                </div>
+              </section>
+              <section class="board-column" data-status="done">
+                <header>
+                  <span class="column-dot done-dot"></span>
+                  <h2>Done</h2>
+                  <span class="column-count mono" data-column-count="done"
+                    >0</span
+                  >
+                </header>
+                <div class="task-list" data-task-list="done">
+                  <p class="column-empty">Nothing completed yet.</p>
+                </div>
+              </section>
+            </div>
+            <div class="board-footer">
+              <span class="mono">MOVE BUTTONS KEEP EVERY CHANGE EXPLICIT</span
+              ><span>Task updates stay in this browser preview.</span>
+            </div>
+          </section>
+
+          <section
+            class="view"
+            data-view-panel="dashboard"
+            aria-labelledby="dashboard-title"
+            hidden
+          >
+            <div class="page-intro compact-intro" data-enter>
+              <p class="eyebrow">
+                03 / MEETING HEALTH <span class="eyebrow-line"></span>
+              </p>
+              <h1 id="dashboard-title">
+                Clarity is a team habit.<br /><em>Measure the open loops.</em>
+              </h1>
+              <div class="intro-bottom">
+                <p>
+                  Meeting Debt is the average clarity score across unresolved
+                  promises. Lower is clearer; it is a heuristic, not a forecast.
+                </p>
+                <p class="mono intro-note">LIVE FROM THIS REVIEW SESSION</p>
+              </div>
+            </div>
+            <div class="dashboard-grid">
+              <section
+                class="debt-panel"
+                aria-labelledby="debt-heading"
+                data-enter
+              >
+                <div class="debt-copy">
+                  <p class="section-kicker mono">
+                    MEETING DEBT / CURRENT SESSION
+                  </p>
+                  <h2 id="debt-heading">
+                    Unresolved promise<br />clarity score
+                  </h2>
+                  <p class="debt-explainer">
+                    Average SMART-gap score for promises not rejected.
+                    Confirming owner, deadline, and deliverable can reduce the
+                    score.
+                  </p>
+                  <div class="debt-legend">
+                    <span><i class="legend-dot vague-dot"></i>Vague 46–100</span
+                    ><span><i class="legend-dot fuzzy-dot"></i>Fuzzy 16–45</span
+                    ><span><i class="legend-dot clear-dot"></i>Clear 0–15</span>
+                  </div>
+                </div>
+                <div class="debt-number-wrap">
+                  <p class="mono debt-label">
+                    BEFORE <span id="debt-before">—</span>
+                  </p>
+                  <p class="debt-number" id="debt-now">—</p>
+                  <p class="mono debt-current-label">MEETING DEBT NOW</p>
+                  <div class="debt-bar" aria-hidden="true">
+                    <span id="debt-bar-fill"></span>
+                  </div>
+                  <p class="mono debt-change" id="debt-change">
+                    No reviewed promises yet
+                  </p>
+                </div>
+              </section>
+              <section class="metric-panel chart-panel" data-enter>
+                <div class="panel-head">
+                  <div>
+                    <p class="section-kicker mono">CURRENT MIX</p>
+                    <h3>Promise clarity</h3>
+                  </div>
+                  <span class="mono panel-meta" id="promise-total"
+                    >0 PROMISES</span
+                  >
+                </div>
+                <div class="mix-content" id="mix-content">
+                  <div class="mix-empty">
+                    Your clarity mix appears after transcript review.
+                  </div>
+                </div>
+                <p class="chart-caption">
+                  Pie segments show the share of clear, fuzzy, and vague
+                  promises.
+                </p>
+              </section>
+              <section class="metric-panel chart-panel" data-enter>
+                <div class="panel-head">
+                  <div>
+                    <p class="section-kicker mono">SCORE DISTRIBUTION</p>
+                    <h3>Promises by clarity</h3>
+                  </div>
+                  <span class="mono panel-meta">COUNT</span>
+                </div>
+                <div class="score-bar-chart" id="score-bar-chart">
+                  <p class="mix-empty">
+                    The bar chart appears after transcript review.
+                  </p>
+                </div>
+                <p class="chart-caption">
+                  Each bar is a promise count; labels remain visible without
+                  color.
+                </p>
+              </section>
+              <section class="metric-panel load-panel" data-enter>
+                <div class="panel-head">
+                  <div>
+                    <p class="section-kicker mono">OWNERSHIP</p>
+                    <h3>Task load by owner</h3>
+                  </div>
+                  <span class="mono panel-meta">APPROVED TASKS</span>
+                </div>
+                <div class="load-content" id="load-content">
+                  <div class="mix-empty">
+                    Owner workload is empty until tasks are approved.
+                  </div>
+                </div>
+                <p class="chart-caption">
+                  Bars scale to the largest approved task count.
+                </p>
+              </section>
+              <section class="orphan-panel" data-enter>
+                <div>
+                  <p class="section-kicker mono">FOLLOW-UP NEEDED</p>
+                  <h3>Promises without an owner</h3>
+                  <p id="orphan-copy">
+                    No transcript has been reviewed in this session.
+                  </p>
+                </div>
+                <button class="text-button" type="button" data-go-view="review">
+                  Review promises
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 12h15M13 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </section>
+              <section class="reminder-panel" data-enter>
+                <div class="panel-head">
+                  <div>
+                    <p class="section-kicker mono">NEXT STEP</p>
+                    <h3>Useful reminders</h3>
+                  </div>
+                  <span class="mono panel-meta">NO AUTO-SEND</span>
+                </div>
+                <div id="reminder-list" class="reminder-list">
+                  <p class="reminder-empty">
+                    Approve a task with a due date to create a calendar reminder
+                    link.
+                  </p>
+                </div>
+              </section>
+            </div>
+            <div class="dashboard-footer">
+              <span class="mono">HEURISTIC, NOT A PREDICTOR</span
+              ><button class="text-button" type="button" id="dashboard-export">
+                Download approved tasks CSV
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3v12m0 0 4-4m-4 4-4-4" />
+                  <path d="M5 16v4h14v-4" />
+                </svg>
+              </button>
+            </div>
+          </section>
+          <section
+            class="view"
+            data-view-panel="settings"
+            aria-labelledby="settings-title"
+            hidden
+          >
+            <div class="page-intro compact-intro" data-enter>
+              <p class="eyebrow">
+                WORKSPACE / PREFERENCES <span class="eyebrow-line"></span>
+              </p>
+              <h1 id="settings-title">
+                A quieter workspace.<br /><em>Settings that stay clear.</em>
+              </h1>
+              <div class="intro-bottom">
+                <p>
+                  Adjust the look and reset this browser preview without
+                  changing a connected account or service.
+                </p>
+                <p class="mono intro-note">LOCAL PREFERENCES</p>
+              </div>
+            </div>
+            <div class="settings-list">
+              <section class="settings-row" data-enter>
+                <div>
+                  <p class="section-kicker mono">APPEARANCE</p>
+                  <h2>Theme</h2>
+                  <p>
+                    Switch between Paper and Night using the sun/moon control.
+                  </p>
+                </div>
+                <button
+                  class="text-button"
+                  id="settings-theme-toggle"
+                  type="button"
+                >
+                  Switch theme
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 12h15M13 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </section>
+              <section class="settings-row" data-enter>
+                <div>
+                  <p class="section-kicker mono">PRIVACY</p>
+                  <h2>Transcript handling</h2>
+                  <p>
+                    Files are read in this browser. This preview has no AI
+                    endpoint, server-side transcript storage, or team sync.
+                  </p>
+                </div>
+                <span class="settings-status">LOCAL ONLY</span>
+              </section>
+              <section class="settings-row" data-enter>
+                <div>
+                  <p class="section-kicker mono">SESSION DATA</p>
+                  <h2>Reset the current session</h2>
+                  <p>
+                    Clears the transcript review and approved tasks currently
+                    held in memory.
+                  </p>
+                </div>
+                <button
+                  class="text-button danger-link"
+                  id="reset-session"
+                  type="button"
+                >
+                  Clear session data
+                </button>
+              </section>
+            </div>
+          </section>
+          <section
+            class="view"
+            data-view-panel="help"
+            aria-labelledby="help-title"
+            hidden
+          >
+            <div class="page-intro compact-intro" data-enter>
+              <p class="eyebrow">
+                SUPPORT / ERGON GUIDE <span class="eyebrow-line"></span>
+              </p>
+              <h1 id="help-title">
+                Help for the next<br /><em>clear commitment.</em>
+              </h1>
+              <div class="intro-bottom">
+                <p>
+                  Short answers for the transcript review, promise score, board,
+                  and local-preview limits.
+                </p>
+                <p class="mono intro-note">HELP CENTER</p>
+              </div>
+            </div>
+            <div class="help-layout">
+              <div class="help-questions" data-enter>
+                <details open>
+                  <summary>How do I start a review?</summary>
+                  <p>
+                    Open Review, paste meeting text with speaker names or choose
+                    a .txt, .vtt, or .srt file, then select Review commitments.
+                    The file is read locally in this browser.
+                  </p>
+                </details>
+                <details>
+                  <summary>What does the vague score mean?</summary>
+                  <p>
+                    It is a transparent SMART-gap heuristic. It adds points when
+                    owner, deadline, or deliverable is missing or when hedge
+                    language appears. It is not a prediction of performance.
+                  </p>
+                </details>
+                <details>
+                  <summary>Does this version use AI or sync teams?</summary>
+                  <p>
+                    No. This frontend preview uses a small local rules preview
+                    and the provided example. It does not call an AI service,
+                    store shared records, or connect team memberships.
+                  </p>
+                </details>
+                <details>
+                  <summary>How do reminders work?</summary>
+                  <p>
+                    Approve a task and enter a full YYYY-MM-DD deadline to get a
+                    Google Calendar draft link. Reminder text can also be
+                    copied; nothing is sent automatically.
+                  </p>
+                </details>
+                <details>
+                  <summary>Where can I view tasks?</summary>
+                  <p>
+                    Approved promises appear on the Board. Use the move buttons
+                    to update To Do, Doing, and Done. The Dashboard summarizes
+                    the current browser session.
+                  </p>
+                </details>
+              </div>
+              <aside class="help-aside" data-enter>
+                <p class="section-kicker mono">NEED A NEXT STEP?</p>
+                <h2>Continue your work</h2>
+                <button class="text-button" type="button" data-go-view="review">
+                  Open transcript review
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 12h15M13 5l7 7-7 7" />
+                  </svg></button
+                ><button class="text-button" type="button" data-go-view="board">
+                  Open task board
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 12h15M13 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </aside>
+            </div>
+          </section>
+        </main>
+        <footer class="app-footer">
+          <span class="mono">ERGON · ἔργον</span
+          ><span>Specific promises make better work.</span
+          ><span class="mono">Collaborate with Passion</span>
+        </footer>
+      </div>
     </div>
-  </div>
-  <div id="toast-region" class="toast-region" role="status" aria-live="polite" aria-atomic="true"></div>
-  <script type="module" src="/main.js"></script>
-</body>
+    <div
+      id="toast-region"
+      class="toast-region"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+    <script type="module" src="/main.js"></script>
+  </body>
 </html>

@@ -99,6 +99,43 @@ function bindControls(scope=document){
     press(el,(element)=>{if(reduced())return;animate(element,{transform:"scale(.97)"},{duration:.12,easing:enterEase});return()=>animate(element,{transform:"scale(1)"},{duration:.14,easing:enterEase});});
   }
 }
+/* Mobile navigation drawer: height expands/collapses on a spring while the
+   content fades and slides in. Returns a promise that resolves when the
+   drawer has settled (open drawers end on height:auto so they reflow). */
+function drawer(element, open) {
+  if (!element) return Promise.resolve();
+  const content = element.querySelector(".nav-drawer-inner");
+  if (reduced()) {
+    element.style.visibility = open ? "visible" : "hidden";
+    element.style.height = open ? "auto" : "0px";
+    element.style.opacity = open ? "1" : "0";
+    if (content) { content.style.opacity = open ? "1" : "0"; content.style.transform = "none"; }
+    return Promise.resolve();
+  }
+  const from = element.getBoundingClientRect().height;
+  const to = open ? element.scrollHeight : 0;
+  element.style.visibility = "visible";
+  element.style.opacity = "1";
+  if (content) animate(content, {
+    opacity: [open ? 0 : 1, open ? 1 : 0],
+    transform: [open ? "translateY(-6px)" : "translateY(0px)", open ? "translateY(0px)" : "translateY(-6px)"]
+  }, { duration: open ? 0.3 : 0.16, easing: enterEase });
+  return new Promise((resolve) => animate(element, {
+    height: [from + "px", to + "px"]
+  }, {
+    type: "spring", stiffness: 260, damping: 30,
+    onComplete: () => {
+      if (open) { element.style.height = "auto"; }
+      else {
+        element.style.height = "0px";
+        element.style.visibility = "hidden";
+        element.style.opacity = "0";
+        if (content) content.style.transform = "none";
+      }
+      resolve();
+    }
+  }));
+}
 function reducedMotion(){return reduced();}
 
-export const ergonMotion={ready,reveal,sweep,countTo,gauge,flight,flip,pulse,toast:showToast,toastElement,drift:startDrift,startDrift,reduced:reducedMotion,progress,syncMinimap,changeView,bindControls,debt};
+export const ergonMotion={ready,reveal,sweep,countTo,gauge,flight,flip,pulse,toast:showToast,toastElement,drift:startDrift,startDrift,reduced:reducedMotion,progress,syncMinimap,changeView,bindControls,debt,drawer};

@@ -17,25 +17,53 @@
     <div class="wash wash-aegean" aria-hidden="true"></div>
     <div class="app-shell">
       <aside class="rail" aria-label="Main navigation">
+        <div class="rail-header">
         <a class="wordmark" href="#profile" aria-label="Ergon home">
           <span class="wordmark-name"
             >ergon<span class="wordmark-sweep" aria-hidden="true"></span></span
           ><span class="greek">ἔργον</span>
         </a>
-        <button
-          class="nav-link profile-nav is-active"
-          type="button"
-          data-view="profile"
-          aria-current="page"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="8" r="3.5" />
-            <path d="M4.5 20c.8-3.5 3.4-5.5 7.5-5.5s6.7 2 7.5 5.5" /></svg
-          ><span>Profile</span>
-        </button>
+          <button
+            class="nav-toggle"
+            id="nav-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="nav-drawer"
+            aria-label="Open navigation menu"
+            title="Menu"
+          >
+            <svg
+              class="nav-toggle-icon nav-toggle-menu"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+            <svg
+              class="nav-toggle-icon nav-toggle-close"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />
+            </svg>
+          </button>
+        </div>
+        <div class="nav-drawer" id="nav-drawer">
+          <div class="nav-drawer-inner">
         <div class="rail-rule"></div>
         <p class="rail-label">Workspace</p>
         <nav class="nav-list" aria-label="Workspace">
+          <button
+            class="nav-link profile-nav is-active"
+            type="button"
+            data-view="profile"
+            aria-current="page"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="8" r="3.5" />
+              <path d="M4.5 20c.8-3.5 3.4-5.5 7.5-5.5s6.7 2 7.5 5.5" /></svg
+            ><span>Profile</span>
+          </button>
           <button class="nav-link" type="button" data-view="review">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 5.5h16M4 12h10M4 18.5h7" />
@@ -97,7 +125,13 @@
           </button>
         </div>
         <nav class="utility-list" aria-label="Support and settings">
-          <button class="nav-link" type="button" data-view="settings">
+          <button
+            class="nav-link"
+            type="button"
+            data-view="settings"
+            aria-label="Settings"
+            title="Settings"
+          >
             <svg
               viewBox="0 0 24 24"
               width="24"
@@ -110,7 +144,13 @@
               /></svg
             ><span>Settings</span>
           </button>
-          <button class="nav-link" type="button" data-view="help">
+          <button
+            class="nav-link"
+            type="button"
+            data-view="help"
+            aria-label="Help center"
+            title="Help center"
+          >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="12" cy="12" r="9" />
               <path d="M9.7 9a2.4 2.4 0 1 1 4.4 1.3c-.9 1.1-2.1 1.3-2.1 3" />
@@ -118,6 +158,8 @@
             ><span>Help center</span>
           </button>
         </nav>
+          </div>
+        </div>
       </aside>
 
       <div class="main-column">
@@ -234,7 +276,6 @@
                       type="number"
                       min="0"
                       step="1"
-                      placeholder="—"
                       inputmode="numeric"
                     />
                   </div>

@@ -1,5 +1,53 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://mhusakfcmxocneubnuku.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_FW_WngncWy9ECARG5cgV1g_YIe1bI5Q";
+
+async function ensureAnonymousSession() {
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.getSession();
+
+  if (sessionError) throw sessionError;
+
+  if (sessionData.session) {
+    return sessionData.session;
+  }
+
+  const { data, error } = await supabase.auth.signInAnonymously();
+
+  if (error) throw error;
+
+  return data.session;
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const $ = (s, root = document) => root.querySelector(s);
 const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+
+async function saveMeeting(transcript) {
+  const session = await ensureAnonymousSession();
+
+  if (!session?.user?.id) {
+    throw new Error("No authenticated session found.");
+  }
+
+  const { data, error } = await supabase
+    .from("meetings")
+    .insert({
+      user_id: session.user.id,
+      title: nodes.title.value.trim() || "Untitled meeting",
+      meeting_date: nodes.date.value || null,
+      transcript,
+    })
+    .select("id")
+    .single();
+
+  if (error) throw error;
+
+  state.meetingId = data.id;
+  return data.id;
+}
 
 const sampleTranscript = [
   "Aman: Okay team, Avartan registrations open next month. Sponsor list pe kaam karna hai.",
@@ -105,6 +153,7 @@ const state = {
   lastDebt: null,
   isAnalyzed: false,
   sourceLabel: "Awaiting transcript",
+  meetingId: null,
 };
 const profileState = {
   name: "",
@@ -192,6 +241,82 @@ function calculateScore(c) {
 }
 function refreshScore(c) {
   Object.assign(c, calculateScore(c));
+}
+/* Calendar support for every promise card: `dueDate` holds the
+   calendar value (YYYY-MM-DD) and is deliberately NOT part of calculateScore,
+   so picking, changing or removing a date never changes the score or the
+   clear/fuzzy/vague label on its own. The transcript deadline text stays the
+   scored criterion and the original quote is never rewritten. Relative
+   phrases resolve against the meeting date, never the system clock; anything
+   ambiguous is left empty for the user to set manually. */
+const WEEKDAY_INDEX = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
+function toISODate(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return (
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate())
+  );
+}
+function meetingDateValue() {
+  return parseISODate(nodes.date.value) || "";
+}
+function resolveDeadlineDate(raw, meetingDate) {
+  const text = String(raw || "").trim();
+  if (!text) return "";
+  // Explicit calendar dates resolve on their own, meeting date or not.
+  const explicit = text.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+  if (explicit) {
+    const d = new Date(explicit[1] + "T00:00:00");
+    return !Number.isNaN(d.getTime()) && toISODate(d) === explicit[1]
+      ? explicit[1]
+      : "";
+  }
+  const base = parseISODate(meetingDate);
+  if (!base) return ""; // No meeting date: relative phrases stay unset.
+  const baseDate = new Date(base + "T00:00:00");
+  const shift = (days) =>
+    toISODate(
+      new Date(
+        baseDate.getFullYear(),
+        baseDate.getMonth(),
+        baseDate.getDate() + days,
+      ),
+    );
+  const cleaned = text
+    .toLowerCase()
+    .replace(/^(?:by|due|before|on)\s+/, "")
+    .replace(/\b(?:at\s*)?\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?)\b/g, "")
+    .replace(/\b(?:noon|midnight|eod|end of day)\b/g, "")
+    .replace(/[,.;!?]+$/g, "")
+    .trim();
+  if (/\btomorrow\b/.test(cleaned)) return shift(1);
+  if (/\b(?:today|tonight)\b/.test(cleaned)) return shift(0);
+  const weekdayMatch = cleaned.match(
+    /\b(?:(next|this|coming)\s+)?(sunday|monday|tuesday|wednesday|thursday|friday|saturday|sun|mon|tue|tues|wed|thu|thur|thurs|fri|sat)\b/,
+  );
+  if (weekdayMatch) {
+    const weekday = WEEKDAY_INDEX[weekdayMatch[2].slice(0, 3)];
+    const fromWeekStart = (weekday + 6) % 7; // Weeks start on Monday.
+    if (weekdayMatch[1] === "next" || weekdayMatch[1] === "coming") {
+      // "next Friday" = that weekday in the following calendar week.
+      const aheadOfWeekStart = -((baseDate.getDay() + 6) % 7);
+      return toISODate(
+        new Date(
+          baseDate.getFullYear(),
+          baseDate.getMonth(),
+          baseDate.getDate() + aheadOfWeekStart + 7 + fromWeekStart,
+        ),
+      );
+    }
+    // Bare "by Friday": the next occurrence strictly after the meeting date.
+    const ahead = (weekday - baseDate.getDay() + 7) % 7;
+    return ahead === 0 ? "" : shift(ahead); // Same weekday = ambiguous.
+  }
+  // Recognised as relative but not resolvable to a single day ("next week").
+  return "";
 }
 function debtNow() {
   const live = state.commitments.filter((c) => c.status !== "rejected");
@@ -375,6 +500,7 @@ function parseLocalTranscript(text) {
       sample: false,
     };
     refreshScore(c);
+    c.dueDate = resolveDeadlineDate(deadline, meetingDateValue());
     found.push(c);
   }
   return found;
@@ -385,77 +511,172 @@ function setProgress(value, label) {
   if (motion) motion.progress(nodes.progressFill, value);
   else nodes.progressFill.style.transform = "scaleX(" + value + ")";
 }
-function analyzeTranscript() {
+
+async function analyzeTranscript() {
   const text = nodes.transcriptInput.value.trim();
+
   if (!text) {
     nodes.message.textContent = "Add a transcript before starting a review.";
     toast("Add a transcript first.", "error");
     nodes.transcriptInput.focus();
     return;
   }
-  nodes.message.textContent = "Reading the transcript in this browser…";
+
   nodes.analyze.disabled = true;
-  nodes.analyze.querySelector("span").textContent = "Reading transcript";
-  nodes.progress.hidden = false;
-  setProgress(0.06, "Preparing transcript");
-  let p = 0.06;
-  const steps = [
-    "Reading transcript turns",
-    "Checking commitment language",
-    "Preparing review notes",
-  ];
-  const stepTimer = setInterval(() => {
-    p = Math.min(0.94, p + 0.22);
-    setProgress(p, steps[Math.min(2, Math.floor(p * 3))]);
-  }, 120);
-  setTimeout(() => {
-    clearInterval(stepTimer);
-    state.commitments = state.sample
-      ? sampleCommitments.map((c) => ({
-          ...c,
-          hedges: [...c.hedges],
+  nodes.analyze.querySelector("span").textContent = "Analyzing...";
+  nodes.message.textContent = state.sample
+    ? "Preparing the example review..."
+    : "Sending transcript to Gemini...";
+
+  setProgress(0.15, "Preparing transcript");
+
+  try {
+    let commitments;
+
+    if (state.sample) {
+      // Keep the existing sample fixture unchanged.
+      commitments = sampleCommitments.map((c) => ({
+        ...c,
+        hedges: [...c.hedges],
+        status: "pending",
+      }));
+    } else {
+      setProgress(0.35, "Analyzing with Gemini");
+
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          transcript: text,
+          meetingDate: nodes.date.value || "",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errorDetails = await response.text();
+        throw new Error(
+          `Gemini request failed (${response.status}): ${errorDetails}`,
+        );
+      }
+
+      if (!Array.isArray(data.promises)) {
+        throw new Error("Gemini returned an invalid response.");
+      }
+
+      setProgress(0.75, "Preparing promise reviews");
+
+      commitments = data.promises.map((item, index) => {
+        const rawQuote = String(
+          item.evidence_quote || item.original_text || "",
+        );
+
+        // Never silently treat an invented quote as verified evidence.
+        const quote = rawQuote && text.includes(rawQuote) ? rawQuote : "";
+
+        const deliverable = String(item.deliverable || "");
+
+        const c = {
+          id: `gemini-${Date.now()}-${index}`,
+          speaker: String(item.speaker || ""),
+          quote,
+          title: deliverable
+            ? deliverable.charAt(0).toUpperCase() + deliverable.slice(1)
+            : "Unspecified deliverable",
+          owner: String(item.owner || ""),
+          deadline: String(item.due_date || item.deadline_raw || ""),
+          dueDate: String(item.due_date || ""),
+          deadlineRaw: String(item.deadline_raw || ""),
+          deliverable,
+          hedges: Array.isArray(item.hedge_phrases) ? item.hedge_phrases : [],
+          missingInformation: Array.isArray(item.missing_information)
+            ? item.missing_information
+            : [],
+          conditional: false,
           status: "pending",
-        }))
-      : parseLocalTranscript(text);
+          sample: false,
+        };
+
+        // Keep Ergon's existing deterministic scoring engine.
+        refreshScore(c);
+
+        return c;
+      });
+    }
+
+    // Prefill each promise's calendar from the resolved transcript date.
+    for (const c of commitments)
+      if (!parseISODate(c.dueDate))
+        c.dueDate = resolveDeadlineDate(
+          c.deadlineRaw || c.deadline,
+          meetingDateValue(),
+        );
+
+    state.transcript = text;
+    state.commitments = commitments;
     state.tasks = [];
     state.isAnalyzed = true;
-    state.debtBefore = state.commitments.length
+
+    state.debtBefore = commitments.length
       ? Math.round(
-          state.commitments.reduce(
-            (sum, c) => sum + calculateScore(c).score,
-            0,
-          ) / state.commitments.length,
+          commitments.reduce((sum, c) => sum + calculateScore(c).score, 0) /
+            commitments.length,
         )
       : 0;
+
     state.lastDebt = null;
-    setProgress(1, "Review prepared");
-    setTimeout(() => {
-      nodes.progress.hidden = true;
-      nodes.analyze.disabled = false;
-      nodes.analyze.querySelector("span").textContent = "Review commitments";
-      nodes.message.textContent = state.sample
-        ? "Example fixture loaded; this is a local preview, not AI output."
-        : "Local rules preview only — no AI or API is connected.";
-      nodes.analysisMode.textContent = state.sample
-        ? "PROVIDED EXAMPLE"
-        : "LOCAL RULES PREVIEW";
-      renderAll();
-      if (!state.commitments.length)
-        toast(
-          "No commitment lines found. Check speaker names and wording.",
-          "error",
-        );
-      else
-        toast(
-          state.commitments.length +
-            " commitment" +
-            (state.commitments.length === 1 ? "" : "s") +
-            " ready to review.",
-          "success",
-        );
-    }, 160);
-  }, 540);
+
+    setProgress(1, "Analysis complete");
+
+    nodes.analysisMode.textContent = state.sample
+      ? "PROVIDED EXAMPLE"
+      : "GEMINI AI ANALYSIS";
+
+    nodes.message.textContent = state.sample
+      ? "Example fixture loaded; this is not AI output."
+      : "Gemini extraction complete. Review the promises before accepting them.";
+
+    renderAll();
+
+    if (!state.sample) {
+      saveMeeting(text)
+        .then(() => {
+          toast("Meeting saved to Supabase.", "success");
+        })
+        .catch((error) => {
+          console.error("Meeting save failed:", error);
+          toast(
+            "Analysis succeeded, but the meeting could not be saved.",
+            "error",
+          );
+        });
+    }
+
+    if (!commitments.length) {
+      toast("No commitments were extracted.", "info");
+    } else {
+      toast(
+        `${commitments.length} promise(s) extracted successfully.`,
+        "success",
+      );
+    }
+  } catch (error) {
+    console.error("Gemini analysis failed:", error);
+
+    nodes.message.textContent =
+      error.message || "Analysis failed. Please try again.";
+
+    toast("Could not analyze the transcript.", "error");
+  } finally {
+    nodes.progress.hidden = true;
+    nodes.analyze.disabled = false;
+    nodes.analyze.querySelector("span").textContent = "Review commitments";
+  }
 }
+
 nodes.analyze.addEventListener("click", analyzeTranscript);
 
 function statusClass(label) {
@@ -561,14 +782,14 @@ function makePromiseCard(c, index) {
   card.dataset.id = c.id;
   card.dataset.label = calculateScore(c).label;
   card.innerHTML =
-    '<div class="promise-top"><div class="gauge-wrap"><svg class="gauge" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="14"/><circle class="gauge-value" cx="18" cy="18" r="14"/></svg><span class="gauge-score">0</span></div><div class="promise-heading"><h4></h4><span class="risk-label"></span></div><span class="card-index mono"></span></div><blockquote class="promise-quote"></blockquote><div class="score-evidence"></div><div class="slot-chips"></div><div class="promise-fields"><label>OWNER<input data-field="owner" type="text" autocomplete="off" /></label><label>DEADLINE<input data-field="deadline" type="text" autocomplete="off" /></label><label class="deliverable-field">DELIVERABLE<input data-field="deliverable" type="text" autocomplete="off" /></label></div><div class="card-actions"><p class="clarity-hint"></p><div class="action-buttons"><button class="reject-button text-button" data-action="reject" type="button">Reject</button><button class="accept-button" data-action="accept" type="button">Approve</button></div></div>';
+    '<div class="promise-top"><div class="gauge-wrap"><svg class="gauge" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="14"/><circle class="gauge-value" cx="18" cy="18" r="14"/></svg><span class="gauge-score">0</span></div><div class="promise-heading"><h4></h4><span class="risk-label"></span></div><span class="card-index mono"></span></div><blockquote class="promise-quote"></blockquote><div class="score-evidence"></div><div class="slot-chips"></div><div class="promise-fields"><label>OWNER<input data-field="owner" type="text" autocomplete="off" /></label><label>DEADLINE<input data-field="deadline" type="text" autocomplete="off" /></label><label class="due-date-field">DUE DATE<input data-field="dueDate" type="date" autocomplete="off" /><span class="due-date-readout"></span></label><label class="deliverable-field">DELIVERABLE<input data-field="deliverable" type="text" autocomplete="off" /></label></div><div class="card-actions"><p class="clarity-hint"></p><div class="action-buttons"><button class="reject-button text-button" data-action="reject" type="button">Reject</button><button class="accept-button" data-action="accept" type="button">Approve</button></div></div>';
   $("h4", card).textContent = c.title;
   $(".promise-quote", card).textContent = "“" + c.quote + "”";
   $(".card-index", card).textContent = String(index + 1).padStart(2, "0");
   for (const input of $$("[data-field]", card)) {
     const field = input.dataset.field;
     input.value = c[field] || "";
-    input.placeholder =
+    if (input.type !== "date") input.placeholder =
       field === "owner"
         ? "Name"
         : field === "deadline"
@@ -611,6 +832,20 @@ function updateCardVisual(c, card) {
   path.style.strokeDasharray = String(circ);
   if (motion) motion.gauge(path, result.score);
   else path.style.strokeDashoffset = String(circ * (1 - result.score / 100));
+  const readout = $(".due-date-readout", card);
+  if (readout) {
+    const iso = parseISODate(c.dueDate);
+    if (iso) {
+      readout.textContent = new Date(iso + "T00:00:00").toLocaleDateString(
+        undefined,
+        { weekday: "short", year: "numeric", month: "short", day: "numeric" },
+      );
+      readout.classList.remove("is-unset");
+    } else {
+      readout.textContent = "No date selected";
+      readout.classList.add("is-unset");
+    }
+  }
   const risk = $(".risk-label", card);
   risk.textContent = displayLabel(result.label);
   risk.className = "risk-label " + result.label;
@@ -706,6 +941,18 @@ function renderTranscriptArea() {
     nodes.minimap.replaceChildren();
   }
 }
+/* Re-syncs the desktop Teams height after renderProfile rewrites team rows.
+   The variable/function are declared later (TDZ), so use window.* and defer the
+   work to a frame so repeated triggers in one tick collapse into one measurement. */
+let teamsSyncQueued = false;
+function queueTeamsHeightSync() {
+  if (teamsSyncQueued || typeof window.syncTeamsHeight !== "function") return;
+  teamsSyncQueued = true;
+  requestAnimationFrame(() => {
+    teamsSyncQueued = false;
+    window.syncTeamsHeight();
+  });
+}
 function renderProfile() {
   const nameField = $("#profile-name"),
     roleField = $("#profile-role"),
@@ -762,6 +1009,7 @@ function renderProfile() {
     empty.textContent =
       "No team history yet. Add a team you belong to, or use Join team to record one here.";
     history.append(empty);
+    queueTeamsHeightSync();
     return;
   }
   for (const team of [...profileState.teams].reverse()) {
@@ -794,6 +1042,7 @@ function renderProfile() {
     row.append(info, actions);
     history.append(row);
   }
+  queueTeamsHeightSync();
 }
 $("#profile-form").addEventListener("submit", (event) =>
   event.preventDefault(),
@@ -870,6 +1119,14 @@ nodes.inspector.addEventListener("input", (event) => {
   const c = state.commitments.find((x) => x.id === card.dataset.id);
   if (!c || c.status !== "pending") return;
   c[input.dataset.field] = input.value;
+  if (input.dataset.field === "deadline") {
+    const resolved = resolveDeadlineDate(c.deadline, meetingDateValue());
+    if (resolved) {
+      c.dueDate = resolved;
+      const picker = $('[data-field="dueDate"]', card);
+      if (picker) picker.value = resolved;
+    }
+  }
   updateCardVisual(c, card);
   renderDashboard({ animateDebt: true });
 });
@@ -899,7 +1156,7 @@ nodes.inspector.addEventListener("click", async (event) => {
     refreshScore(c);
     if (
       genericOwner(c.owner || "") ||
-      !String(c.deadline || "").trim() ||
+      !String(c.deadline || c.dueDate || "").trim() ||
       !String(c.deliverable || "").trim()
     ) {
       const missing = calculateScore(c).missing.join(", ");
@@ -918,7 +1175,7 @@ nodes.inspector.addEventListener("click", async (event) => {
       commitmentId: c.id,
       title: c.deliverable.trim(),
       owner: c.owner.trim(),
-      deadline: c.deadline.trim(),
+      deadline: c.deadline.trim() || String(c.dueDate || "").trim(),
       status: "todo",
       quote: c.quote,
       speaker: c.speaker,
@@ -1429,3 +1686,109 @@ if (motion) {
   motion.reveal($$("[data-enter]", $('[data-view-panel="profile"]')));
 }
 renderAll();
+
+ensureAnonymousSession()
+  .then(() => {
+    console.info("Ergon anonymous session ready.");
+  })
+  .catch((error) => {
+    console.error("Ergon session setup failed:", error.message);
+  });
+
+/* On desktop the Teams row must match the height of the "Your details" panel
+   above it. The panels are content-sized, so match media picks the breakpoint
+   and a ResizeObserver re-syncs whenever the details panel changes height. */
+const teamsHeightQuery = window.matchMedia("(min-width: 901px)");
+function syncTeamsHeight() {
+  const details = $(".profile-details-panel"),
+    teams = $(".profile-teams-layout");
+  if (!details || !teams) return;
+  // Only the desktop two-column layout; styles.css drops the variable below 900px.
+  if (!teamsHeightQuery.matches) {
+    teams.style.removeProperty("--teams-match-height");
+    return;
+  }
+  // Height is 0 while the profile view is hidden; keep the last known value.
+  if (!details.getClientRects().length) return;
+  const height = Math.round(details.getBoundingClientRect().height);
+  if (height) teams.style.setProperty("--teams-match-height", height + "px");
+}
+window.syncTeamsHeight = syncTeamsHeight;
+teamsHeightQuery.addEventListener("change", syncTeamsHeight);
+window.addEventListener("resize", syncTeamsHeight);
+new ResizeObserver(syncTeamsHeight).observe($(".profile-details-panel"));
+syncTeamsHeight();
+
+/* Mobile navigation (<=768px): the header shows the wordmark plus a
+   hamburger button, and the navigation items live in a drawer that
+   springs open/closed. Above the breakpoint the drawer is a static
+   part of the single-row header. */
+const navRail = $(".rail");
+const navToggle = $("#nav-toggle");
+const navDrawer = $("#nav-drawer");
+const navMobileQuery = window.matchMedia("(max-width: 768px)");
+let navOpen = false;
+
+function setNavOpen(open, { moveFocus = false } = {}) {
+  if (!navRail || !navToggle || !navDrawer) return;
+  navOpen = Boolean(open) && navMobileQuery.matches;
+  navRail.classList.toggle("is-open", navOpen);
+  navToggle.setAttribute("aria-expanded", String(navOpen));
+  navToggle.setAttribute(
+    "aria-label",
+    navOpen ? "Close navigation menu" : "Open navigation menu",
+  );
+  navToggle.setAttribute("title", navOpen ? "Close menu" : "Menu");
+  // Keep the closed drawer out of the tab order without removing it from
+  // the accessibility tree on desktop, where it is always visible.
+  if (navOpen) navDrawer.removeAttribute("inert");
+  else if (navMobileQuery.matches) navDrawer.setAttribute("inert", "");
+  if (motion) motion.drawer(navDrawer, navOpen);
+  else {
+    navDrawer.style.visibility = navOpen ? "visible" : "hidden";
+    navDrawer.style.height = navOpen ? "auto" : "0px";
+    navDrawer.style.opacity = navOpen ? "1" : "0";
+  }
+  if (moveFocus) {
+    if (navOpen) $("#nav-drawer .nav-link")?.focus();
+    else navToggle.focus();
+  }
+}
+
+function syncNavMode() {
+  if (!navRail || !navToggle || !navDrawer) return;
+  if (navMobileQuery.matches) {
+    setNavOpen(false);
+  } else {
+    // Desktop/tablet: the drawer is always open and must not keep any of
+    // the inline styles the mobile animation wrote (including the inner
+    // content's opacity/transform from a previous close).
+    navOpen = false;
+    navRail.classList.remove("is-open");
+    navToggle.setAttribute("aria-expanded", "false");
+    navDrawer.removeAttribute("inert");
+    navDrawer.style.removeProperty("height");
+    navDrawer.style.removeProperty("visibility");
+    navDrawer.style.removeProperty("opacity");
+    const inner = navDrawer.querySelector(".nav-drawer-inner");
+    if (inner) {
+      inner.style.removeProperty("opacity");
+      inner.style.removeProperty("transform");
+    }
+  }
+}
+
+navToggle?.addEventListener("click", () => setNavOpen(!navOpen));
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && navOpen) setNavOpen(false, { moveFocus: true });
+});
+document.addEventListener("pointerdown", (event) => {
+  if (navOpen && !event.target.closest?.(".rail")) setNavOpen(false);
+});
+$$("#nav-drawer .nav-link").forEach((button) =>
+  button.addEventListener("click", () => {
+    if (navOpen) setNavOpen(false);
+  }),
+);
+navMobileQuery.addEventListener("change", syncNavMode);
+syncNavMode();

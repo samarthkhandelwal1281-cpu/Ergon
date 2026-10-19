@@ -136,7 +136,8 @@ a {
 }
 .app-shell {
   display: grid;
-  grid-template-columns: 238px minmax(0, 1fr);
+  /* The rail is now a full-width horizontal header on every screen size. */
+  grid-template-columns: minmax(0, 1fr);
   min-height: 100vh;
   max-width: 1800px;
   margin: 0 auto;
@@ -1096,6 +1097,18 @@ h1 em {
 .promise-fields .deliverable-field {
   grid-column: 1/-1;
 }
+.promise-fields .due-date-field {
+  grid-column: 1 / -1;
+}
+.due-date-readout {
+  color: var(--ink-2);
+  font: 9px/1.5 var(--mono);
+  letter-spacing: 0.03em;
+}
+.due-date-readout.is-unset {
+  color: var(--ink-3);
+  opacity: 0.8;
+}
 .card-actions {
   display: flex;
   align-items: center;
@@ -1636,7 +1649,7 @@ html.motion-ready .wordmark-sweep {
 }
 @media (max-width: 1120px) {
   .app-shell {
-    grid-template-columns: 204px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
   .rail {
     padding-inline: 16px;
@@ -2294,6 +2307,17 @@ body {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
   gap: 16px;
+  /* Desktop only: syncTeamsHeight sets --teams-match-height to the height of
+     the details panel above so both blocks end on the same baseline. */
+  min-height: var(--teams-match-height, auto);
+}
+.team-history-panel,
+.join-team-panel {
+  display: flex;
+  flex-direction: column;
+}
+.join-team-panel .button-primary {
+  align-self: flex-start;
 }
 .team-history-panel .panel-head h3,
 .join-team-panel h3 {
@@ -2376,7 +2400,9 @@ body {
   justify-self: start;
 }
 .team-local-note {
-  margin: 12px 0 0 !important;
+  /* auto top margin pins the note to the bottom when the panel is stretched */
+  margin: auto 0 0 !important;
+  padding-top: 12px;
   color: var(--ink-3) !important;
   font-size: 11px !important;
 }
@@ -2637,38 +2663,24 @@ html[data-theme="dark"] .theme-icon-moon {
   margin-top: 8px;
 }
 @media (max-width: 900px) {
+  /* Compact two-row header: Profile · Review · Board · Dashboard on one row,
+     then Settings + Help on the left with the theme switch pinned right. */
   .rail {
     position: sticky;
     top: 0;
     height: auto;
     min-height: 0;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-areas: "brand profile theme" "workspace workspace workspace" "utilities utilities utilities";
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 8px 14px;
-    padding: 10px 18px;
+    gap: 6px 8px;
+    padding: 10px 14px;
     border-right: 0;
     border-bottom: 1px solid var(--hairline);
     background: var(--bg);
   }
-  .wordmark {
-    grid-area: brand;
-    display: flex;
-    margin: 0;
-  }
-  .wordmark-name {
-    font-size: 31px;
-    padding-bottom: 6px;
-  }
-  .wordmark-sweep {
-    width: 34px;
-    height: 2px;
-  }
-  .greek {
-    font-size: 9px;
-    margin-top: 2px;
-  }
+  .wordmark,
   .rail-rule,
   .rail-label,
   .rail-spacer,
@@ -2677,19 +2689,24 @@ html[data-theme="dark"] .theme-icon-moon {
     display: none;
   }
   .profile-nav {
-    grid-area: profile;
-    justify-self: start;
-    width: max-content;
+    flex: 1 1 auto;
+    justify-content: center;
+    width: auto;
+    min-width: 0;
     margin: 0;
   }
   .nav-list {
-    grid-area: workspace;
+    flex: 3 1 0;
     display: flex;
+    gap: 4px;
+  }
+  .nav-list .nav-link {
+    flex: 1;
     justify-content: center;
-    gap: 5px;
   }
   .nav-link {
     width: auto;
+    min-width: 0;
     min-height: 40px;
     padding: 0 11px;
     font-size: 13px;
@@ -2701,23 +2718,11 @@ html[data-theme="dark"] .theme-icon-moon {
   .nav-count {
     display: none;
   }
-  .theme-toggle {
-    grid-area: theme;
-    position: static;
-    right: auto;
-    bottom: auto;
-    justify-self: end;
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    background: transparent;
-    border: 1px solid var(--hairline);
-    border-radius: var(--r-sm);
-  }
   .utility-list {
-    grid-area: utilities;
+    order: 1;
+    flex: 1;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 14px;
     margin: 0;
   }
@@ -2725,11 +2730,27 @@ html[data-theme="dark"] .theme-icon-moon {
     min-height: 32px;
     padding: 0 6px;
   }
+  .rail-bottom-row {
+    order: 2;
+    margin: 0 0 0 auto;
+  }
+  .theme-toggle {
+    position: static;
+    right: auto;
+    bottom: auto;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-sm);
+  }
   .profile-layout {
     grid-template-columns: 1fr 1fr;
   }
   .profile-teams-layout {
     grid-template-columns: 1fr 1fr;
+    min-height: 0;
   }
 }
 @media (max-width: 640px) {
@@ -2737,27 +2758,19 @@ html[data-theme="dark"] .theme-icon-moon {
     font-size: 16px;
   }
   .rail {
-    grid-template-columns: 1fr auto;
-    grid-template-areas: "profile theme" "workspace workspace" "utilities utilities";
-    gap: 6px 10px;
-    padding: 8px 12px;
-  }
-  .wordmark {
-    display: none;
+    gap: 6px;
+    padding: 8px 10px;
   }
   .profile-nav {
-    justify-self: start;
     min-height: 36px;
-    padding: 0 8px;
+    padding: 0 6px;
   }
   .nav-list {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 4px;
+    gap: 3px;
   }
   .nav-link {
     justify-content: center;
-    min-height: 42px;
+    min-height: 38px;
     padding: 0 5px;
     gap: 6px;
     font-size: 12px;
@@ -2767,15 +2780,13 @@ html[data-theme="dark"] .theme-icon-moon {
     height: 15px;
   }
   .utility-list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 4px;
+    gap: 8px;
     margin: 0;
   }
   .utility-list .nav-link {
     justify-content: flex-start;
-    min-height: 36px;
-    padding: 0 9px;
+    min-height: 34px;
+    padding: 0 6px;
   }
   .theme-toggle {
     width: 34px;
@@ -2788,6 +2799,7 @@ html[data-theme="dark"] .theme-icon-moon {
   .profile-layout,
   .profile-teams-layout {
     grid-template-columns: 1fr;
+    min-height: 0;
   }
   .profile-details-panel,
   .profile-activity-panel,
@@ -2899,11 +2911,10 @@ html[data-theme="dark"] .theme-icon-moon {
 }
 @media (max-width: 900px) {
   .rail-bottom-row {
-    grid-area: theme;
     justify-self: end;
     align-self: center;
     width: max-content;
-    margin: 0;
+    margin: 0 0 0 auto;
     padding: 0;
     border: 0;
     gap: 0;
@@ -2926,10 +2937,9 @@ html[data-theme="dark"] .theme-icon-moon {
 }
 @media (max-width: 640px) {
   .rail-bottom-row {
-    grid-area: theme;
     justify-self: end;
     align-self: center;
-    margin: 0;
+    margin: 0 0 0 auto;
     padding: 0;
     border: 0;
   }
@@ -2939,5 +2949,376 @@ html[data-theme="dark"] .theme-icon-moon {
   .rail-bottom-row .theme-toggle {
     width: 34px;
     height: 34px;
+  }
+}
+
+/* ============================================================
+   Navigation redesign. These rules come last so they win over the
+   older vertical-rail layout above.
+   >768px  : one horizontal header row — Profile · Review · Board ·
+             Dashboard on the left, then Settings · Help · Theme on
+             the right (Settings/Help go icon-only below 1200px).
+   <=768px : brand on the left, hamburger on the right, and a
+             collapsible drawer that stacks the navigation items.
+   ============================================================ */
+.rail {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 10px clamp(16px, 3vw, 34px);
+  border-right: 0;
+  border-bottom: 1px solid var(--hairline);
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(12px);
+}
+.rail-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  min-width: 0;
+}
+.wordmark {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 9px;
+  margin: 0;
+}
+.wordmark-name {
+  font-size: 30px;
+  padding-bottom: 7px;
+}
+.wordmark-sweep {
+  width: 32px;
+  height: 3px;
+}
+.greek {
+  margin-top: 0;
+}
+.rail-rule,
+.rail-label,
+.rail-note,
+.rail-foot {
+  display: none;
+}
+.rail-spacer {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.nav-drawer {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+.nav-drawer-inner {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-list {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.nav-link {
+  width: auto;
+  flex: none;
+  min-height: 40px;
+  padding: 0 12px;
+  gap: 10px;
+  font-size: 13.5px;
+}
+.nav-list .nav-link {
+  flex: none;
+  justify-content: flex-start;
+}
+.nav-count {
+  margin-left: 2px;
+}
+.profile-nav {
+  margin: 0;
+}
+.utility-list {
+  order: 1;
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: 4px;
+  margin: 0 0 0 8px;
+}
+.utility-list .nav-link {
+  justify-content: flex-start;
+  min-height: 40px;
+  padding: 0 10px;
+}
+.rail-bottom-row {
+  order: 2;
+  display: flex;
+  align-items: center;
+  width: max-content;
+  margin: 0 0 0 8px;
+  padding: 0;
+  border: 0;
+  gap: 0;
+}
+.rail-bottom-row .rail-note {
+  display: none;
+}
+.theme-toggle {
+  position: static;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  z-index: auto;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: inherit;
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+}
+.topbar {
+  padding-right: clamp(24px, 5vw, 72px);
+}
+
+/* Hamburger toggle (hidden until the mobile breakpoint). */
+.nav-toggle {
+  display: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    border-color var(--t-fast),
+    background var(--t-fast),
+    color var(--t-fast);
+}
+.nav-toggle:hover {
+  border-color: var(--aegean);
+  background: rgba(30, 58, 95, 0.05);
+  color: var(--ink);
+}
+.nav-toggle-icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+.nav-toggle-close {
+  display: none;
+}
+.rail.is-open .nav-toggle-menu {
+  display: none;
+}
+.rail.is-open .nav-toggle-close {
+  display: block;
+}
+
+/* Icon-only quick access: hide the Settings / Help text labels on
+   lower desktop and tablet widths. The labels stay in the DOM and
+   the buttons keep their aria-labels, so the links stay accessible. */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .utility-list .nav-link > span:not(.nav-count) {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .utility-list .nav-link {
+    padding: 0 9px;
+  }
+  .nav-count {
+    display: none;
+  }
+  .greek {
+    display: none;
+  }
+}
+
+/* Tablet: the same single row, just more compact. */
+@media (max-width: 900px) {
+  .rail {
+    gap: 10px;
+    padding: 9px 16px;
+  }
+  .wordmark-name {
+    font-size: 26px;
+    padding-bottom: 6px;
+  }
+  .wordmark-sweep {
+    width: 28px;
+    height: 2px;
+  }
+  .nav-link {
+    min-height: 38px;
+    padding: 0 9px;
+    font-size: 13px;
+  }
+  .nav-link svg,
+  .nav-list .nav-link svg {
+    width: 16px;
+    height: 16px;
+  }
+  .utility-list .nav-link {
+    min-height: 38px;
+  }
+  .theme-toggle {
+    width: 38px;
+    height: 38px;
+  }
+  .topbar {
+    padding-right: clamp(16px, 4vw, 32px);
+  }
+}
+
+/* Mobile: brand + hamburger header with a slide-down drawer.
+   The drawer's height is animated from JS (Motion spring); the
+   closed state here is the safe no-JS fallback. */
+@media (max-width: 768px) {
+  .rail {
+    flex-wrap: wrap;
+    gap: 0 10px;
+    padding: 8px 14px;
+  }
+  .rail-header {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+  .wordmark-name {
+    font-size: 25px;
+    padding-bottom: 5px;
+  }
+  .wordmark-sweep {
+    width: 26px;
+  }
+  .greek {
+    font-size: 9px;
+  }
+  .nav-toggle {
+    display: grid;
+  }
+  .nav-drawer {
+    flex-basis: 100%;
+    display: block;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+  }
+  .nav-drawer-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 10px 0 6px;
+    border-top: 1px solid var(--hairline);
+  }
+  .nav-list {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .nav-list .nav-link {
+    width: 100%;
+    justify-content: flex-start;
+    min-height: 46px;
+    padding: 0 12px;
+    font-size: 14px;
+  }
+  .nav-list .nav-link svg {
+    width: 18px;
+    height: 18px;
+  }
+  .nav-list .nav-count {
+    display: inline;
+    margin-left: auto;
+  }
+  /* Drawer order from the spec: Dashboard first, then Profile · Review · Board. */
+  .nav-list [data-view="dashboard"] {
+    order: -1;
+  }
+  .rail-spacer {
+    display: none;
+  }
+  .utility-list {
+    order: 1;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    margin: 6px 0 0;
+    padding-top: 8px;
+    border-top: 1px solid var(--hairline);
+  }
+  .utility-list .nav-link {
+    width: 100%;
+    justify-content: flex-start;
+    min-height: 46px;
+    padding: 0 12px;
+    font-size: 14px;
+  }
+  .utility-list .nav-link svg {
+    width: 18px;
+    height: 18px;
+  }
+  .rail-bottom-row {
+    order: 2;
+    width: 100%;
+    margin: 6px 0 0;
+    padding-top: 8px;
+    border-top: 1px solid var(--hairline);
+  }
+  .rail-bottom-row .theme-toggle {
+    width: 100%;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 550;
+    color: var(--ink-2);
+    border-color: transparent;
+    border-radius: var(--r-sm);
+  }
+  .rail-bottom-row .theme-toggle:hover {
+    border-color: var(--hairline);
+    background: rgba(30, 58, 95, 0.05);
+  }
+  .rail-bottom-row .theme-toggle .sr-only {
+    position: static !important;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
   }
 }
